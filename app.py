@@ -7,6 +7,9 @@ app.secret_key = 'yoursecret'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# ✅ IMPORTANT: Add this line (fixes 401 → 302 redirect)
+login_manager.login_view = 'login'
+
 # Dummy user store
 users = {'admin': {'password': 'password'}}
 

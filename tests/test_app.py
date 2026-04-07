@@ -4,7 +4,6 @@ from app import app
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
-    app.config['LOGIN_DISABLED'] = False
     with app.test_client() as client:
         yield client
 
@@ -25,7 +24,7 @@ def test_valid_login(client):
     }, follow_redirects=True)
 
     assert response.status_code == 200
-    assert b'home' in response.data or b'Home' in response.data
+    assert b'Welcome' in response.data
 
 # ---------------------------
 # Test Invalid Login
@@ -49,7 +48,6 @@ def test_home_requires_login(client):
 # Test Logout Flow
 # ---------------------------
 def test_logout(client):
-    # Login first
     client.post('/login', data={
         'username': 'admin',
         'password': 'password'
