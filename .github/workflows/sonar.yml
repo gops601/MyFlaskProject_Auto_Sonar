@@ -52,16 +52,16 @@ jobs:
       # ---------------------------
       # Run Tests with Coverage
       # ---------------------------
-      # - name: Run tests
-      #   run: |
-      #     pytest tests/ --cov=. --cov-report=xml
+      - name: Run tests
+        run: |
+          pytest tests/ --cov=. --cov-report=xml
 
       # # ---------------------------
       # # Verify Coverage File
       # # ---------------------------
-      # - name: Check coverage
-      #   run: |
-      #     ls -l coverage.xml
+      - name: Check coverage
+        run: |
+          ls -l coverage.xml
 
       # ---------------------------
       # SonarQube Scan
