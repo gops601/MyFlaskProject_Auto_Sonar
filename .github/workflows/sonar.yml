@@ -1,0 +1,79 @@
+name: SonarQube Scan
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ---------------------------
+      # Checkout Code
+      # ---------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ---------------------------
+      # Setup Java (Required)
+      # ---------------------------
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # ---------------------------
+      # Setup Python
+      # ---------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # ---------------------------
+      # Install Dependencies
+      # ---------------------------
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      # ---------------------------
+      # Fix Import Path (IMPORTANT)
+      # ---------------------------
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      # ---------------------------
+      # Run Tests with Coverage
+      # ---------------------------
+      - name: Run tests
+        run: |
+          pytest tests/ --cov=. --cov-report=xml
+
+      # ---------------------------
+      # Verify Coverage File
+      # ---------------------------
+      - name: Check coverage
+        run: |
+          ls -l coverage.xml
+
+      # ---------------------------
+      # SonarQube Scan
+      # ---------------------------
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_HOST_URL: http://187.127.142.34:9000
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}_${{ github.actor }}_${{ github.repository_id }}
+            -Dsonar.projectName=${{ github.event.repository.name }}-${{ github.actor }}
+            -Dsonar.sources=.
+            -Dsonar.login=squ_567ab1ce90cfb7298314ac8a91d5a725894acf5c
+            -Dsonar.python.coverage.reportPaths=coverage.xml
